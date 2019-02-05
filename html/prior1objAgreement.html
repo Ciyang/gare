@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>Title of This Experiment</title>
+    <title>Rating descriptions of pictures</title>
 
     <!--JS-->
 
@@ -39,7 +39,7 @@
     <script src="//uniqueturker.myleott.com/lib.js" type="text/javascript"></script>
     <script type="text/javascript">
     $(document).ready(function(){
-      var ut_id = "30751936b4ce1d55b58ecdcfb6b52c22";   // remember to change this!!
+      var ut_id = "56247e04bfa3ad87664293f4acefaace";   // remember to change this!!
       if (UTWorkerLimitReached(ut_id)) {
           $(".slide").hide();
           $("body").html("You have already completed the maximum number of HITs allowed by this requester. Please click 'Return HIT' to avoid any impact on your approval rating.");
@@ -54,8 +54,9 @@
 
   <div class="slide" id="i0" >
     <p id="cocolab">Stanford Linguistics</p>
-      <p id="instruct-text">This task involves rating sentences that describe images. It should take ~6 minutes.
-        You must be a native English speaker to participate. Please take <b>only 1</b> HIT, thanks!</p>
+      <p id="instruct-text">This task involves adjusting a slider to rate sentences that describe pictures. It should take ~6 minutes.
+    <br /><b>Before accepting the HIT:</b> You must be a native English speaker to participate. Your screen should be large enough:
+    a desktop, a laptop, or a large tablet is good, but NOT a phone. Please take <b>only 1</b> HIT, thanks!</p>
         <!-- <p style="font-family:courier; font-size:14px; text-align: justify;">Please note:
            There will be multiple posted versions of this HIT throughout today and tomorrow.
             You may work on only one HIT in this series. Thank you!</p>
@@ -113,19 +114,29 @@ Otherwise, modified to whatever is required for you given your affliation.
 </div> -->
 
 <div class="slide" id="instructions">
-  <h3>Instructions</h3>
-  <p>You will see a series of pictures. For each picture there is
-    a sentence below.
-    Please adjust the slider to rate the extent to which you
-    agree with the sentence as a description of the picture.
+  <h3>Screen calibration</h3>
+  <p>Please adjust the size of the picture below by using
+    the buttons below, until the credit card
+    displayed on the screen is as big as a credit card (or a debit card,
+    or a driver's
+     license) in real life.
   </p>
+  <img id="imgcalibrate" src="../stimuli/cardCalibrate.jpg" alt="Can't load image. Please report it at the end of the study." height="223px" width="350px">
+  <p>
+  <button onclick="_s.fastshrink()">--</button>
+  <button onclick="_s.shrink()">-</button>
+  <button onclick="_s.enlarge()">+</button>
+  <button onclick="_s.fastenlarge()">++</button>
+</p>
+<p>
+When the calibration is complete, please click on "Continue" to start the task.</p>
   <button onclick="_s.button()">Continue</button>
 </div>
 
   <div class="slide" id="one_slider">
     <!-- <p>Here is one slider. For every trial in this block, you get an input to the 'present_handle' function. You can use that variable to display different prompts:</p> -->
    <!-- <p>The target object is surrounded by the red lines</p> -->
-   <img id="imgcrit" src="../stimuli/bookThick2.png" alt="Can't load image. Please report" height="350px" width="350px" style="border:1px solid black">
+   <img id="imgcrit" src="../stimuli/non.png" alt="Can't load image. Please report it at the end of the study." height="350px" width="350px" style="border:1px solid black">
      <!-- <img id="imgleft" src="../stimuli/bookThick2.png" alt="Can't load image. Please report" height="350px" width="350px" style="border:1px solid black">
 &nbsp;&nbsp;
      <img id="imgright" src="../stimuli/bookThick3.png" alt="Can't load image. Please report" height="350px" width="350px" style="border:1px solid red"> -->
@@ -148,8 +159,8 @@ Otherwise, modified to whatever is required for you given your affliation.
       <p>Native Language: <input type="text" id="language"/></p>
       <label>(the language(s) spoken at home when you were a child; <b>please answer truthfully
         and your payment will NOT be affected</b>)</label>
-      <br />
-      <p class="info">Answering the questions below is optional, but will help us understand your answers.</p>
+      <br /><br />
+      <label>Answering the questions below is optional, but will help us understand your answers.</label>
       <p>Did you read the instructions and do you think you did the HIT correctly?</p>
       <label><input type="radio"  name="assess" value="No"/>No</label>
       <label><input type="radio"  name="assess" value="Yes"/>Yes</label>
@@ -198,6 +209,7 @@ Otherwise, modified to whatever is required for you given your affliation.
       <textarea id="comments" rows="3" cols="50"></textarea>
       <br/>
       <button id="submit" onclick="_s.submit()">Submit</button>
+      <div class="err">Please tell us about your native language before submitting!</div>
     </div>
   </div>
 

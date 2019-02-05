@@ -1,6 +1,8 @@
 function make_slides(f) {
   var   slides = {};
 
+/* For Ling245, no need to change the code
+ for i0 and consent slides*/
   slides.i0 = slide({
      name : "i0",
      start: function() {
@@ -8,71 +10,154 @@ function make_slides(f) {
      }
   });
 
+  slides.consent = slide({
+     name : "consent",
+     start: function() {
+      exp.startT = Date.now();
+      $("#consent_2").hide();
+      exp.consent_position = 0;
+     },
+    button : function() {
+      if(exp.consent_position == 0) {
+         exp.consent_position++;
+         $("#consent_1").hide();
+         $("#consent_2").show();
+      } else {
+        exp.go(); //use exp.go() if and only if there is no "present" data.
+      }
+    }
+  });
+
+/*Consult the code in the consent slide if you
+  want to break down very long instructions */
   slides.instructions = slide({
     name : "instructions",
-    ratio : 1,
-    fastshrink : function(){
-      if (this.ratio > .1){
-        this.ratio = this.ratio - .1;
-      }
-      $("#imgcalibrate").attr("width", 350 * this.ratio);
-      $("#imgcalibrate").attr("height", 223 * this.ratio);
-    },
-    shrink : function(){
-      if (this.ratio > .01){
-        this.ratio = this.ratio - .01;
-      }
-      $("#imgcalibrate").attr("width", 350 * this.ratio);
-      $("#imgcalibrate").attr("height", 223 * this.ratio);
-    },
-    enlarge : function(){
-      this.ratio = this.ratio + .01
-      $("#imgcalibrate").attr("width", 350 * this.ratio);
-      $("#imgcalibrate").attr("height", 223 * this.ratio);
-    },
-    fastenlarge : function(){
-      this.ratio = this.ratio + .1
-      $("#imgcalibrate").attr("width", 350 * this.ratio);
-      $("#imgcalibrate").attr("height", 223 * this.ratio);
-    },
     button : function() {
-      exp.system.ratio = this.ratio;
-      $("#imgcrit").attr("width", 350 * this.ratio);
-      $("#imgcrit").attr("height", 350 * this.ratio);
       exp.go(); //use exp.go() if and only if there is no "present" data.
     }
   });
 
-
-  slides.one_slider = slide({
-    name : "one_slider",
+  slides.example = slide({
+    name: "example",
     start: function() {
-     exp.trialStartT = Date.now();
-   },
+      $(".err").hide();
+      $('input[name=exChoice]:checked').prop('checked', false);
+    },
+    button : function() {
+    // make sure participants understand
+    // the task before they continue
+      // response = $("#text_response").val();
+      // if (response.length == 0) {
+      //   $(".err").show();
+      // } else {
+      //   exp.data_trials.push({
+      //     "trial_type" : "example",
+      //     "response" : response
+      //   });
+      //   exp.go(); //make sure this is at the *end*, after you log your data
+      // }
+      exp.go(); //use exp.go() if and only if there is no "present" data.
+    },
+  });
+
+  slides.priming = slide({
+    name: "priming",
+    start: function() {
+      $("#primingCondition").html("This is a priming sentece with " + exp.condition);
+    },
+
+
+    /* trial information for this block
+     (the variable 'stim' will change between each of these values,
+      and for each of these, present_handle will be run.)
+      Remember to comment out the other
+      specification of present below*/
+    present: _.shuffle([
+      {speaker: "John"},
+      {speaker: "Mary"}
+    ]),
+
+    /* It might be the case that the
+    array of things you want to present depends
+    on the condition. A solution is
+    to define the array when the condition
+    is determined, e.g., in init().
+    Remember to comment out the other
+    specification of present above*/
+    //present: _.shuffle(exp.primingStims),
+
+    present_handle: function(stim){
+
+      $("#primingCondition").html("This is a sentence with " + exp.condition);
+
+      // use this version if present is directly given
+      $("#primingSentence").html(stim.speaker +
+       " said a sentence with " + exp.condition);
+
+      // use this version if present depends on the condition
+      //$("#primingSentence").html(stim);
+      this.stim = stim; //you can store this information in the slide so you can record it later.
+    },
+
+    button : function() {
+      _stream.apply(this);
+    },
+  });
+
+  // slides.example = slide({
+  //   name: "example",
+  //   start: function() {
+  //     $(".err").hide();
+  //     $(".display_condition").html("You are in " + exp.condition + ".");
+  //   },
+  //   button : function() {
+  //     response = $("#text_response").val();
+  //     if (response.length == 0) {
+  //       $(".err").show();
+  //     } else {
+  //       exp.data_trials.push({
+  //         "trial_type" : "example",
+  //         "response" : response
+  //       });
+  //       exp.go(); //make sure this is at the *end*, after you log your data
+  //     }
+  //   },
+  // });
+
+  slides.critical = slide({
+    name : "critical",
+
     /* trial information for this block
      (the variable 'stim' will change between each of these values,
       and for each of these, present_handle will be run.) */
-    present : allStims,
+    present : _.shuffle([
+       "John and Mary laugh.",
+       "Does John and Mary laugh?",
+       "John and I am happy."
+    ]),
 
     //this gets run only at the beginning of the block
     present_handle : function(stim) {
       $(".err").hide();
 
-      this.stim = stim; //I like to store this information in the slide so I can record it later.
-      this.stim.number = _.sample(stim.range);
+      // uncheck the button and erase the previous value
+      exp.criticalResponse == null;
+      $('input[name=criticalChoice]:checked').prop('checked', false);
+      $("#criticalSentence").html(stim);
 
-      $("#imgcrit").attr("src", "../stimuli/" + stim.fileinit + this.stim.number + ".png");
-      $("#description").html("This " + stim.noun + " is " + stim.adjective + ".");
-      this.init_sliders();
-      exp.sliderPost = null; //erase current slider value
+      this.stim = stim; //you can store this information in the slide so you can record it later.
+
     },
 
     button : function() {
-      if (exp.sliderPost == null) {
+      //find out the checked option
+      exp.criticalResponse = $('input[name=criticalChoice]:checked').val();
+
+      // verify the response
+      if (exp.criticalResponse == null) {
         $(".err").show();
       } else {
         this.log_responses();
-        exp.trialStartT = Date.now();
 
         /* use _stream.apply(this); if and only if there is
         "present" data. (and only *after* responses are logged) */
@@ -80,24 +165,65 @@ function make_slides(f) {
       }
     },
 
-    init_sliders : function() {
-      utils.make_slider("#single_slider", function(event, ui) {
-        exp.sliderPost = ui.value;
-      });
-    },
-
     log_responses : function() {
       exp.data_trials.push({
-        "noun" : this.stim.noun,
-        "adjective" : this.stim.adjective,
-        "fileinit" : this.stim.fileinit,
-        "number" : this.stim.number,
-        "response" : exp.sliderPost,
-        "RT" : Date.now() - exp.trialStartT
+        "trial_type" : "critical",
+        //"sentence": this.stim, // don't forget to log the stimulus
+        "response" : exp.criticalResponse
       });
     }
   });
+
+  // slides.one_slider = slide({
+  //   name : "one_slider",
   //
+  //   /* trial information for this block
+  //    (the variable 'stim' will change between each of these values,
+  //     and for each of these, present_handle will be run.) */
+  //   present : [
+  //     {subject: "dog", object: "ball"},
+  //     {subject: "cat", object: "windowsill"},
+  //     {subject: "bird", object: "shiny object"},
+  //   ],
+  //
+  //   //this gets run only at the beginning of the block
+  //   present_handle : function(stim) {
+  //     $(".err").hide();
+  //
+  //     this.stim = stim; //I like to store this information in the slide so I can record it later.
+  //
+  //
+  //     $(".prompt").html(stim.subject + "s like " + stim.object + "s.");
+  //     this.init_sliders();
+  //     exp.sliderPost = null; //erase current slider value
+  //   },
+  //
+  //   button : function() {
+  //     if (exp.sliderPost == null) {
+  //       $(".err").show();
+  //     } else {
+  //       this.log_responses();
+  //
+  //       /* use _stream.apply(this); if and only if there is
+  //       "present" data. (and only *after* responses are logged) */
+  //       _stream.apply(this);
+  //     }
+  //   },
+  //
+  //   init_sliders : function() {
+  //     utils.make_slider("#single_slider", function(event, ui) {
+  //       exp.sliderPost = ui.value;
+  //     });
+  //   },
+  //
+  //   log_responses : function() {
+  //     exp.data_trials.push({
+  //       "trial_type" : "one_slider",
+  //       "response" : exp.sliderPost
+  //     });
+  //   }
+  // });
+
   // slides.multi_slider = slide({
   //   name : "multi_slider",
   //   present : _.shuffle([
@@ -262,19 +388,14 @@ function make_slides(f) {
         language : $("#language").val(),
         enjoyment : $("#enjoyment").val(),
         asses : $('input[name="assess"]:checked').val(),
-        // age : $("#age").val(),
-        // gender : $("#gender").val(),
-        // education : $("#education").val(),
+        age : $("#age").val(),
+        gender : $("#gender").val(),
+        education : $("#education").val(),
         comments : $("#comments").val(),
         problems: $("#problems").val(),
         fairprice: $("#fairprice").val()
       };
-      if (exp.subj_data.language == ""){
-        $(".err").show();
-      }
-      else {
-        exp.go(); //use exp.go() if and only if there is no "present" data.
-      }
+      exp.go(); //use exp.go() if and only if there is no "present" data.
     }
   });
 
@@ -298,9 +419,21 @@ function make_slides(f) {
 
 /// init ///
 function init() {
+  //specify conditions
+  exp.condition = _.sample(["comparatives", "multiple negations"]); //can randomize between subject conditions here
+  //blocks of the experiment:
+  exp.structure=["i0", "consent", "instructions", "example", "priming", "critical", 'subj_info', 'thanks'];
+
+  exp.primingStims = {"comparatives": ["John ate more food than this burger.",
+                              "Mary had more pets than Fido."],
+             "multiple negations": ["No head injury is too severe to depair",
+             "No head injury is too trivial to ignore"]
+    }[exp.condition];
+
+  // generally no need to change anything below
   exp.trials = [];
   exp.catch_trials = [];
-  exp.condition = _.sample(["CONDITION 1", "condition 2"]); //can randomize between subject conditions here
+  exp.data_trials = [];
   exp.system = {
       Browser : BrowserDetect.browser,
       OS : BrowserDetect.OS,
@@ -309,10 +442,7 @@ function init() {
       screenW: screen.width,
       screenUW: exp.width
     };
-  //blocks of the experiment:
-  exp.structure=["i0", "instructions", "one_slider", 'subj_info', 'thanks'];
 
-  exp.data_trials = [];
   //make corresponding slides:
   exp.slides = make_slides(exp);
 
